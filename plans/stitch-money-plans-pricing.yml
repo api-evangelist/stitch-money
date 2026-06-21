@@ -1,0 +1,133 @@
+specification: API Commons Plans
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/Plans
+provider: Stitch
+providerId: stitch-money
+created: '2026-06-21'
+modified: '2026-06-21'
+reconciled: false
+tags:
+- Payments
+- Open Banking
+- Pay By Bank
+- GraphQL
+- Africa
+- South Africa
+- Fintech
+- Plans
+description: >-
+  Stitch prices its payments and open-banking products on a per-transaction,
+  sales-led basis rather than via published self-serve tiers. Pay By Bank,
+  LinkPay, card, account verification, financial data, disbursements, and
+  refunds are quoted per provider as a blended or per-product transaction fee
+  (often a percentage and/or flat per-transaction amount), negotiated by
+  volume. Public list pricing is not published; rates are agreed during
+  onboarding with Stitch sales.
+notes: >-
+  Per-transaction rates are not publicly reconciled. Verify the exact pricing
+  per product (Pay By Bank, LinkPay, card, verification, financial data,
+  disbursements, refunds) directly with Stitch sales during onboarding.
+sources:
+- https://stitch.money/
+- https://docs.stitch.money
+plans:
+- id: stitch-money-pay-as-you-go
+  name: Per-Transaction (Sales-Led)
+  type: usage
+  description: >-
+    Per-transaction pricing across Stitch payment and data products, quoted
+    per provider and negotiated by volume. No published self-serve tier.
+  entries:
+  - label: Pay By Bank (Instant EFT)
+    name: pay_by_bank
+    type: usage
+    metric: transactions
+    limit: -1
+    timeFrame: month
+    geo: ZA
+    unit: 1
+    price: per-transaction fee, contact sales
+    userMultiplied: false
+  - label: LinkPay (Tokenized Pay By Bank)
+    name: linkpay
+    type: usage
+    metric: transactions
+    limit: -1
+    timeFrame: month
+    geo: ZA
+    unit: 1
+    price: per-transaction fee, contact sales
+    userMultiplied: false
+  - label: Bank Account Verification
+    name: account_verification
+    type: usage
+    metric: verifications
+    limit: -1
+    timeFrame: month
+    geo: ZA
+    unit: 1
+    price: per-verification fee, contact sales
+    userMultiplied: false
+  - label: Financial Data (Accounts / Transactions)
+    name: financial_data
+    type: usage
+    metric: requests
+    limit: -1
+    timeFrame: month
+    geo: ZA
+    unit: 1
+    price: per-linked-account / per-request, contact sales
+    userMultiplied: false
+  - label: Disbursements / Payouts
+    name: disbursements
+    type: usage
+    metric: transactions
+    limit: -1
+    timeFrame: month
+    geo: ZA
+    unit: 1
+    price: per-payout fee, contact sales
+    userMultiplied: false
+  - label: Refunds
+    name: refunds
+    type: usage
+    metric: transactions
+    limit: -1
+    timeFrame: month
+    geo: ZA
+    unit: 1
+    price: per-refund fee, contact sales
+    userMultiplied: false
+  elements:
+  - name: Pay By Bank
+  - name: LinkPay
+  - name: Card
+  - name: Account Verification
+  - name: Financial Data
+  - name: Disbursements
+  - name: Refunds
+- id: stitch-money-enterprise
+  name: Enterprise / Custom
+  type: enterprise
+  description: >-
+    Volume-committed, negotiated per-transaction rates with dedicated support,
+    custom settlement, and access to the full product suite. Contact Stitch
+    sales.
+  entries:
+  - label: Enterprise Agreement
+    name: enterprise
+    type: flat
+    metric: contract
+    limit: -1
+    timeFrame: year
+    geo: ZA
+    unit: 1
+    price: contact sales
+    userMultiplied: false
+  elements:
+  - name: Custom Volume Pricing
+  - name: Dedicated Support
+  - name: Custom Settlement
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

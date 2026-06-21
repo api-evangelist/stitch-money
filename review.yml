@@ -1,0 +1,106 @@
+aid: stitch-money
+name: Stitch
+review:
+  question: Does Stitch expose a documented public WebSocket / streaming API warranting an AsyncAPI artifact?
+  answer: false
+  date: '2026-06-21'
+  reviewer: API Evangelist
+  asyncapiSpecCreated: false
+  asyncapiScopeNote: |
+    No AsyncAPI document was created. Stitch's API is a single synchronous
+    GraphQL endpoint (HTTP POST https://api.stitch.money/graphql). Its
+    asynchronous / event surface is delivered as outbound signed HTTP webhooks,
+    not as a client-consumable WebSocket, SSE, or streaming GraphQL
+    subscription transport. The GraphQL schema does expose a small subscriptions
+    surface (documented under /api/subscriptions/client) used for client
+    configuration, but the documented integration pattern for receiving payment,
+    disbursement, refund, and account-linking events is signed webhooks. Under
+    the current API Evangelist scope, outbound webhooks are documented in the
+    review and in graphql/stitch-money-graphql.md rather than modeled as
+    AsyncAPI channels. Webhooks may be revisited as an AsyncAPI artifact in a
+    future pass.
+findings:
+  summary: |
+    Stitch (stitch.money) - the South African payments and open-banking
+    provider - exposes a single GraphQL API at https://api.stitch.money/graphql
+    (the same URL for test and live clients). Every product (Pay By Bank and
+    LinkPay payment initiation, bank account verification, financial data,
+    disbursements, refunds, webhook configuration) is invoked as a GraphQL query
+    or mutation over HTTP POST with an OAuth2 Bearer access token. The API
+    follows the Relay server specification: collections are cursor-paginated
+    connections and single records are read via the top-level node(id:) field
+    with inline fragments. Asynchronous results (e.g. payment completed/failed)
+    are delivered as outbound signed HTTP webhooks to a client-subscribed
+    endpoint. No client-facing WebSocket (ws/wss) or SSE streaming transport is
+    documented. This is the fintech Stitch, distinct from any unrelated "Stitch"
+    ETL / data-integration product.
+  transports:
+    - protocol: GraphQL over HTTP
+      scheme: https
+      baseURL: https://api.stitch.money/graphql
+      documented: true
+      note: Single POST /graphql endpoint for all queries and mutations; OAuth2 Bearer; Relay pagination.
+    - protocol: Webhooks (outbound HTTP)
+      scheme: https
+      documented: true
+      note: Signed HTTP callbacks for payment, disbursement, refund, and account-linking events; registered per client.
+    - protocol: GraphQL Subscriptions
+      scheme: https
+      documented: true
+      note: A small subscriptions surface exists in the schema (/api/subscriptions/client) for client config; the documented event-delivery pattern is webhooks, not a long-lived subscription stream.
+    - protocol: WebSocket
+      scheme: wss
+      documented: false
+      note: No client-facing WebSocket endpoint is documented.
+    - protocol: SSE
+      scheme: https
+      documented: false
+      note: No Server-Sent Events streaming transport is documented.
+  authentication:
+    - type: OAuth2 Client Credentials
+      note: Client token (e.g. scope client_paymentrequest) for payment requests, disbursements, refunds, verification, and webhook config.
+    - type: OAuth2 Authorization Code (PKCE)
+      note: User access token for user-permissioned financial data and LinkPay account linking.
+  operationsConfirmed:
+    - clientPaymentInitiationRequestCreate (mutation) - create Pay By Bank payment
+    - clientPaymentInitiationRequestCancel (mutation) - cancel a payment request
+    - clientPaymentAuthorizationRequestCreate (mutation) - LinkPay account linking
+    - userInitiatePayment (mutation) - pay with a linked LinkPay account
+    - testClientPaymentInitiationRequestSimulateComplete (mutation) - sandbox completion
+    - verifyBankAccountDetails (query) - bank account verification
+    - clientDisbursementInitiate (mutation) - disbursement / payout
+    - clientRefundInitiate (mutation) - refund a prior payment
+    - clientWebhookAdd (mutation) - register a signed webhook subscription
+    - node(id:) (query) - read a payment initiation request / record by id
+    - user.bankAccounts.transactions (query) - financial data access
+sources:
+  - url: https://docs.stitch.money/graphql
+    type: Documentation
+    note: Using GraphQL - confirms single endpoint, Relay node/connection patterns, OAuth tokens.
+  - url: https://docs.stitch.money/api
+    type: APIReference
+    note: Schema-generated API reference with queries, mutations, and subscriptions sections.
+  - url: https://docs.stitch.money/payment-products/payins/paybybank/integration-process
+    type: Documentation
+    note: Confirms clientPaymentInitiationRequestCreate / Cancel and node status query.
+  - url: https://docs.stitch.money/payment-products/payins/linkpay/integration-process
+    type: Documentation
+    note: Confirms clientPaymentAuthorizationRequestCreate, userInitiatePayment, and signed LinkPay webhooks.
+  - url: https://docs.stitch.money/payment-products/bank-account-verification/integration-process
+    type: Documentation
+    note: Confirms verifyBankAccountDetails query and BankAccountVerificationInput.
+  - url: https://docs.stitch.money/payment-products/payouts/disbursements
+    type: Documentation
+    note: Confirms clientDisbursementInitiate and the nonce idempotency requirement.
+  - url: https://docs.stitch.money/payment-products/payouts/refunds
+    type: Documentation
+    note: Confirms clientRefundInitiate and originalPaymentId input.
+actions:
+  asyncapiPath: null
+  apisYmlUpdated: true
+  reason: |
+    The API is a single synchronous GraphQL endpoint with outbound signed
+    webhooks for events. No client-facing WebSocket/SSE streaming transport is
+    documented, so no AsyncAPI artifact was created. GraphQL transport,
+    authentication, and the webhook event surface are documented in apis.yml,
+    review.yml, and graphql/stitch-money-graphql.md.

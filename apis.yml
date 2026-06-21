@@ -1,0 +1,184 @@
+aid: stitch-money
+url: https://raw.githubusercontent.com/api-evangelist/stitch-money/refs/heads/main/apis.yml
+name: Stitch
+kind: company
+description: Stitch is a South African payments and open-banking infrastructure company.
+  Its single GraphQL API at https://api.stitch.money/graphql powers Pay By Bank (instant
+  EFT) and LinkPay payment initiation, bank account verification, financial data access
+  (accounts, transactions, balances), payouts and disbursements, refunds, and signed
+  webhook subscriptions, authenticated via OAuth2 client-credentials Bearer tokens.
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+tags:
+- Payments
+- Open Banking
+- Pay By Bank
+- GraphQL
+- Africa
+- South Africa
+- Fintech
+created: '2026-06-21'
+modified: '2026-06-21'
+specificationVersion: '0.19'
+apis:
+- aid: stitch-money:payments-pay-by-bank
+  name: Stitch Payments (Pay By Bank)
+  tags:
+  - Payments
+  - Pay By Bank
+  - Instant EFT
+  - GraphQL
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://docs.stitch.money/payment-products/payins/paybybank/integration-process
+  baseURL: https://api.stitch.money/graphql
+  properties:
+  - url: https://docs.stitch.money/payment-products/payins/paybybank/integration-process
+    type: Documentation
+  - url: https://docs.stitch.money/api
+    type: APIReference
+  - url: openapi/stitch-money-openapi.yml
+    type: OpenAPI
+  - url: graphql/stitch-money-graphql.md
+    type: GraphQL
+  - url: collections/stitch-money.postman_collection.json
+    type: Postman
+  description: Pay By Bank (instant EFT) and LinkPay payment initiation via the
+    clientPaymentInitiationRequestCreate and clientPaymentAuthorizationRequestCreate
+    GraphQL mutations, with payment status queried through the Relay node field and
+    completion delivered by signed webhooks.
+- aid: stitch-money:account-verification
+  name: Stitch Account Verification API
+  tags:
+  - Account Verification
+  - Bank Account
+  - KYC
+  - GraphQL
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://docs.stitch.money/payment-products/bank-account-verification/integration-process
+  baseURL: https://api.stitch.money/graphql
+  properties:
+  - url: https://docs.stitch.money/payment-products/bank-account-verification/integration-process
+    type: Documentation
+  - url: https://docs.stitch.money/api
+    type: APIReference
+  - url: openapi/stitch-money-openapi.yml
+    type: OpenAPI
+  - url: graphql/stitch-money-graphql.md
+    type: GraphQL
+  - url: collections/stitch-money.postman_collection.json
+    type: Postman
+  description: Bank account verification via the verifyBankAccountDetails GraphQL
+    query, confirming account holder name, account number, and bank against the
+    BankAccountVerificationInput and returning a VerifiedBankAccountDetails breakdown.
+- aid: stitch-money:financial-data
+  name: Stitch Financial Data API
+  tags:
+  - Financial Data
+  - Accounts
+  - Transactions
+  - Balances
+  - GraphQL
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://stitch.money/blog/how-to-integrate-stitch-using-graphql
+  baseURL: https://api.stitch.money/graphql
+  properties:
+  - url: https://stitch.money/blog/how-to-integrate-stitch-using-graphql
+    type: Documentation
+  - url: https://docs.stitch.money/api
+    type: APIReference
+  - url: openapi/stitch-money-openapi.yml
+    type: OpenAPI
+  - url: graphql/stitch-money-graphql.md
+    type: GraphQL
+  - url: collections/stitch-money.postman_collection.json
+    type: Postman
+  description: User-permissioned financial data access - bank accounts, transactions,
+    balances and debit orders - queried through the user node with bankAccounts,
+    transactions, and runningBalance fields using a user access token.
+- aid: stitch-money:payouts-disbursements
+  name: Stitch Payouts and Disbursements API
+  tags:
+  - Payouts
+  - Disbursements
+  - GraphQL
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://docs.stitch.money/payment-products/payouts/disbursements
+  baseURL: https://api.stitch.money/graphql
+  properties:
+  - url: https://docs.stitch.money/payment-products/payouts/disbursements
+    type: Documentation
+  - url: https://docs.stitch.money/api
+    type: APIReference
+  - url: openapi/stitch-money-openapi.yml
+    type: OpenAPI
+  - url: graphql/stitch-money-graphql.md
+    type: GraphQL
+  - url: collections/stitch-money.postman_collection.json
+    type: Postman
+  description: Outbound disbursements and payouts to beneficiary bank accounts via the
+    clientDisbursementInitiate GraphQL mutation, using amount, destination account
+    details, a beneficiary reference, and a nonce to enforce idempotent uniqueness.
+- aid: stitch-money:refunds
+  name: Stitch Refunds API
+  tags:
+  - Refunds
+  - Payouts
+  - GraphQL
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://docs.stitch.money/payment-products/payouts/refunds
+  baseURL: https://api.stitch.money/graphql
+  properties:
+  - url: https://docs.stitch.money/payment-products/payouts/refunds
+    type: Documentation
+  - url: https://docs.stitch.money/api
+    type: APIReference
+  - url: openapi/stitch-money-openapi.yml
+    type: OpenAPI
+  - url: graphql/stitch-money-graphql.md
+    type: GraphQL
+  - url: collections/stitch-money.postman_collection.json
+    type: Postman
+  description: Full and partial refunds against a prior Pay By Bank or Card payment via
+    the clientRefundInitiate GraphQL mutation, referencing the originalPaymentId of a
+    payment initiation request or card transaction.
+- aid: stitch-money:webhooks
+  name: Stitch Webhooks and Subscriptions API
+  tags:
+  - Webhooks
+  - Subscriptions
+  - Events
+  - GraphQL
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://docs.stitch.money/graphql
+  baseURL: https://api.stitch.money/graphql
+  properties:
+  - url: https://docs.stitch.money/graphql
+    type: Documentation
+  - url: https://docs.stitch.money/api
+    type: APIReference
+  - url: openapi/stitch-money-openapi.yml
+    type: OpenAPI
+  - url: graphql/stitch-money-graphql.md
+    type: GraphQL
+  - url: collections/stitch-money.postman_collection.json
+    type: Postman
+  description: Signed webhook subscriptions created per client to receive payment,
+    disbursement, refund, and account-linking event callbacks, configured via the
+    clientWebhookAdd GraphQL mutation against an HTTPS endpoint with a shared secret.
+common:
+- type: GitHubOrganization
+  url: https://github.com/Stitch-Money
+- type: LinkedIn
+  url: https://www.linkedin.com/company/stitchmoney
+- type: Website
+  url: https://stitch.money/
+- type: Documentation
+  url: https://docs.stitch.money
+- type: Plans
+  url: plans/stitch-money-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/stitch-money-rate-limits.yml
+- type: FinOps
+  url: finops/stitch-money-finops.yml
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

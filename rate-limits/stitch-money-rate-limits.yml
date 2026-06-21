@@ -1,0 +1,62 @@
+specification: API Commons Rate Limits
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/RateLimits
+provider: Stitch
+providerId: stitch-money
+created: '2026-06-21'
+modified: '2026-06-21'
+reconciled: false
+tags:
+- Payments
+- Open Banking
+- Pay By Bank
+- GraphQL
+- Africa
+- South Africa
+- Fintech
+- Rate Limiting
+- Quotas
+- Throttling
+description: >-
+  Stitch exposes a single GraphQL endpoint at https://api.stitch.money/graphql.
+  Specific per-client request rate limits and GraphQL query complexity / depth
+  limits are not publicly published; they are governed per client and tier and
+  confirmed during onboarding. Throttled requests are expected to surface as
+  HTTP 429. Idempotency on write operations (disbursements, refunds) is enforced
+  via a required nonce that de-duplicates retried requests rather than via a
+  rate limit. Per-client values are not reconciled in this artifact.
+notes: >-
+  Verify per-client request-rate and GraphQL query-complexity limits directly
+  with Stitch during onboarding. The nonce on disbursement and refund mutations
+  enforces idempotent uniqueness across retries.
+sources:
+- https://docs.stitch.money
+- https://docs.stitch.money/graphql
+responseCodes:
+  throttled: 429
+limits:
+- name: GraphQL Requests Per Client
+  scope: client
+  metric: requests
+  limit: see provider documentation
+  notes: Per-client request rate against POST /graphql; not publicly published, confirmed at onboarding.
+- name: Query Complexity / Depth
+  scope: request
+  metric: complexity
+  limit: see provider documentation
+  notes: GraphQL query depth and complexity may be bounded server-side; request only the fields needed.
+- name: Pagination Page Size
+  scope: request
+  metric: items
+  limit: cursor-based (first / after)
+  notes: Relay connections are paginated with first / after; large result sets must be paged.
+policies:
+- name: Idempotency via Nonce
+  description: Disbursement and refund mutations require a unique nonce so retried requests do not create duplicate transactions.
+- name: Backoff Strategy
+  description: Clients should implement exponential backoff with jitter and honor Retry-After on HTTP 429.
+- name: Minimal Field Selection
+  description: Query only the precise fields needed to keep responses small and avoid complexity limits.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

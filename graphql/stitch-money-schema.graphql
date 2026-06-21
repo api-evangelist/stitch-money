@@ -1,0 +1,285 @@
+# Representative GraphQL SDL subset for the Stitch (stitch.money) API.
+#
+# This is a REPRESENTATIVE, hand-authored subset modeling the documented Stitch
+# operations (Pay By Bank / LinkPay payment initiation, bank account verification,
+# financial data, disbursements, refunds, and webhooks). It is NOT the authoritative
+# schema. Download the complete, current SDL from the Stitch IDE or via:
+#   gql-sdl https://api.stitch.money/graphql --sdl -o stitch.graphql
+#
+# Covers Stitch.money the fintech, distinct from any unrelated "Stitch" ETL product.
+
+scalar ID
+scalar Date
+scalar DateTime
+scalar URL
+scalar Decimal
+
+enum Currency {
+  ZAR
+  NGN
+  USD
+}
+
+type Money {
+  quantity: Decimal!
+  currency: Currency!
+}
+
+input MoneyInput {
+  quantity: Decimal!
+  currency: Currency!
+}
+
+# ---------------------------------------------------------------------------
+# Relay
+# ---------------------------------------------------------------------------
+
+interface Node {
+  id: ID!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+# ---------------------------------------------------------------------------
+# Payment initiation (Pay By Bank / LinkPay)
+# ---------------------------------------------------------------------------
+
+input BankAccountBeneficiaryInput {
+  name: String!
+  bankId: BankBeneficiaryBankId!
+  accountNumber: String!
+}
+
+input BeneficiaryInput {
+  bankAccount: BankAccountBeneficiaryInput
+}
+
+enum BankBeneficiaryBankId {
+  absa
+  capitec
+  fnb
+  investec
+  nedbank
+  standardbank
+  tymebank
+}
+
+input PaymentInitiationRequestCreateInput {
+  amount: MoneyInput!
+  payerReference: String!
+  beneficiaryReference: String!
+  externalReference: String
+  expireAt: Date
+  beneficiary: BeneficiaryInput!
+}
+
+union PaymentInitiationRequestState =
+    PaymentInitiationRequestPending
+  | PaymentInitiationRequestCompleted
+  | PaymentInitiationRequestCancelled
+  | PaymentInitiationRequestExpired
+
+type PaymentInitiationRequestPending {
+  __typename: String
+}
+
+type PaymentInitiationRequestCompleted {
+  date: DateTime!
+  amount: Money!
+}
+
+type PaymentInitiationRequestCancelled {
+  reason: String
+}
+
+type PaymentInitiationRequestExpired {
+  expiredAt: DateTime
+}
+
+type PaymentInitiationRequest implements Node {
+  id: ID!
+  url: URL
+  amount: Money!
+  payerReference: String!
+  beneficiaryReference: String!
+  externalReference: String
+  state: PaymentInitiationRequestState!
+}
+
+type PaymentInitiationRequestCreateResponse {
+  paymentInitiationRequest: PaymentInitiationRequest!
+}
+
+type PaymentInitiationRequestCancelResponse {
+  paymentInitiationRequest: PaymentInitiationRequest!
+}
+
+# LinkPay account authorization
+type PaymentAuthorizationRequest implements Node {
+  id: ID!
+  url: URL
+}
+
+type PaymentAuthorizationRequestCreateResponse {
+  paymentAuthorizationRequest: PaymentAuthorizationRequest!
+}
+
+# ---------------------------------------------------------------------------
+# Bank account verification
+# ---------------------------------------------------------------------------
+
+input AccountHolderInput {
+  identifyingDocument: String
+  name: String!
+}
+
+input BankAccountVerificationInput {
+  accountNumber: String!
+  bankId: BankBeneficiaryBankId!
+  accountHolder: AccountHolderInput!
+}
+
+type VerifiedBankAccountDetails {
+  accountVerificationResult: String!
+  accountHolderVerified: Boolean!
+  accountNumberVerified: Boolean!
+  accountOpen: Boolean!
+  accountAcceptsCredits: Boolean
+  accountAcceptsDebits: Boolean
+}
+
+# ---------------------------------------------------------------------------
+# Financial data
+# ---------------------------------------------------------------------------
+
+type Transaction implements Node {
+  id: ID!
+  amount: Money!
+  reference: String
+  description: String
+  date: Date!
+  runningBalance: Money
+}
+
+type TransactionEdge {
+  cursor: String!
+  node: Transaction!
+}
+
+type TransactionConnection {
+  edges: [TransactionEdge!]!
+  pageInfo: PageInfo!
+}
+
+type BankAccount implements Node {
+  id: ID!
+  name: String
+  accountNumber: String!
+  currentBalance: Money
+  availableBalance: Money
+  transactions(first: Int, after: String): TransactionConnection!
+}
+
+type User implements Node {
+  id: ID!
+  bankAccounts: [BankAccount!]!
+}
+
+# ---------------------------------------------------------------------------
+# Disbursements / payouts
+# ---------------------------------------------------------------------------
+
+input DisbursementInitiateInput {
+  amount: MoneyInput!
+  nonce: String!
+  beneficiaryReference: String!
+  beneficiary: BeneficiaryInput!
+}
+
+type Disbursement implements Node {
+  id: ID!
+  amount: Money!
+  status: String!
+}
+
+type DisbursementInitiateResponse {
+  disbursement: Disbursement!
+}
+
+# ---------------------------------------------------------------------------
+# Refunds
+# ---------------------------------------------------------------------------
+
+input RefundInitiateInput {
+  originalPaymentId: ID!
+  amount: MoneyInput!
+  nonce: String!
+  reason: String
+}
+
+type Refund implements Node {
+  id: ID!
+  amount: Money!
+  status: String!
+}
+
+type RefundInitiateResponse {
+  refund: Refund!
+}
+
+# ---------------------------------------------------------------------------
+# Webhooks
+# ---------------------------------------------------------------------------
+
+input WebhookAddInput {
+  url: URL!
+  secret: String!
+}
+
+type Webhook implements Node {
+  id: ID!
+  url: URL!
+}
+
+type WebhookAddResponse {
+  webhook: Webhook!
+}
+
+# ---------------------------------------------------------------------------
+# Root types
+# ---------------------------------------------------------------------------
+
+type Query {
+  node(id: ID!): Node
+  user: User
+  verifyBankAccountDetails(input: BankAccountVerificationInput!): VerifiedBankAccountDetails!
+}
+
+type Mutation {
+  clientPaymentInitiationRequestCreate(input: PaymentInitiationRequestCreateInput!): PaymentInitiationRequestCreateResponse!
+  clientPaymentInitiationRequestCancel(input: PaymentInitiationRequestCancelInput!): PaymentInitiationRequestCancelResponse!
+  clientPaymentAuthorizationRequestCreate(input: PaymentAuthorizationRequestCreateInput!): PaymentAuthorizationRequestCreateResponse!
+  userInitiatePayment(input: UserInitiatePaymentInput!): PaymentInitiationRequestCreateResponse!
+  clientDisbursementInitiate(input: DisbursementInitiateInput!): DisbursementInitiateResponse!
+  clientRefundInitiate(input: RefundInitiateInput!): RefundInitiateResponse!
+  clientWebhookAdd(input: WebhookAddInput!): WebhookAddResponse!
+}
+
+input PaymentInitiationRequestCancelInput {
+  paymentRequestId: ID!
+}
+
+input PaymentAuthorizationRequestCreateInput {
+  beneficiary: BeneficiaryInput!
+}
+
+input UserInitiatePaymentInput {
+  paymentAuthorizationId: ID!
+  amount: MoneyInput!
+  beneficiaryReference: String!
+}

@@ -1,0 +1,194 @@
+{
+  "info": {
+    "name": "Stitch GraphQL API",
+    "description": "GraphQL POST examples for the Stitch (stitch.money) payments and open-banking API. All operations are sent to POST https://api.stitch.money/graphql with an OAuth2 Bearer access token. Covers Stitch.money the fintech, distinct from any unrelated 'Stitch' ETL product.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.stitch.money/graphql"
+    },
+    {
+      "key": "bearerToken",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Payments (Pay By Bank)",
+      "item": [
+        {
+          "name": "Create Pay By Bank Payment Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}", "host": ["{{baseUrl}}"] },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"query\": \"mutation CreatePaymentRequest($amount: MoneyInput!, $payerReference: String!, $beneficiaryReference: String!) { clientPaymentInitiationRequestCreate(input: { amount: $amount, payerReference: $payerReference, beneficiaryReference: $beneficiaryReference, beneficiary: { bankAccount: { name: \\\"Acme Pty Ltd\\\", bankId: fnb, accountNumber: \\\"62000000000\\\" } } }) { paymentInitiationRequest { id url } } }\",\n  \"variables\": {\n    \"amount\": { \"quantity\": 100.00, \"currency\": \"ZAR\" },\n    \"payerReference\": \"order-1234\",\n    \"beneficiaryReference\": \"ACME-1234\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Payment Request Status",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}", "host": ["{{baseUrl}}"] },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"query\": \"query GetPaymentRequestStatus($id: ID!) { node(id: $id) { ... on PaymentInitiationRequest { id state { __typename } } } }\",\n  \"variables\": {\n    \"id\": \"payment-initiation-request/01H...\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Cancel Payment Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}", "host": ["{{baseUrl}}"] },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"query\": \"mutation CancelPayment($id: ID!) { clientPaymentInitiationRequestCancel(input: { paymentRequestId: $id }) { paymentInitiationRequest { id } } }\",\n  \"variables\": {\n    \"id\": \"payment-initiation-request/01H...\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "LinkPay - Create Account Authorization",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}", "host": ["{{baseUrl}}"] },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"query\": \"mutation LinkAccount($input: PaymentAuthorizationRequestCreateInput!) { clientPaymentAuthorizationRequestCreate(input: $input) { paymentAuthorizationRequest { id url } } }\",\n  \"variables\": {\n    \"input\": { \"beneficiary\": { \"bankAccount\": { \"name\": \"Acme Pty Ltd\", \"bankId\": \"fnb\", \"accountNumber\": \"62000000000\" } } }\n  }\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Account Verification",
+      "item": [
+        {
+          "name": "Verify Bank Account Details",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}", "host": ["{{baseUrl}}"] },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"query\": \"query VerifyBankAccount($input: BankAccountVerificationInput!) { verifyBankAccountDetails(input: $input) { accountVerificationResult accountHolderVerified accountNumberVerified accountOpen } }\",\n  \"variables\": {\n    \"input\": { \"accountNumber\": \"62000000000\", \"bankId\": \"fnb\", \"accountHolder\": { \"name\": \"Jane Doe\" } }\n  }\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Financial Data",
+      "item": [
+        {
+          "name": "List User Bank Accounts and Transactions",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}", "host": ["{{baseUrl}}"] },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"query\": \"query UserTransactions { user { bankAccounts { accountNumber currentBalance transactions(first: 50) { edges { node { id amount reference description date runningBalance } } } } } }\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payouts and Disbursements",
+      "item": [
+        {
+          "name": "Initiate Disbursement",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}", "host": ["{{baseUrl}}"] },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"query\": \"mutation CreateDisbursement($input: DisbursementInitiateInput!) { clientDisbursementInitiate(input: $input) { disbursement { id status } } }\",\n  \"variables\": {\n    \"input\": { \"amount\": { \"quantity\": 250.00, \"currency\": \"ZAR\" }, \"nonce\": \"d290f1ee-6c54-4b01-90e6-d701748f0851\", \"beneficiaryReference\": \"PAYOUT-9876\", \"beneficiary\": { \"bankAccount\": { \"name\": \"Jane Doe\", \"bankId\": \"capitec\", \"accountNumber\": \"1700000000\" } } }\n  }\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Refunds",
+      "item": [
+        {
+          "name": "Initiate Refund",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}", "host": ["{{baseUrl}}"] },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"query\": \"mutation CreateRefund($input: RefundInitiateInput!) { clientRefundInitiate(input: $input) { refund { id status } } }\",\n  \"variables\": {\n    \"input\": { \"originalPaymentId\": \"payment-initiation-request/01H...\", \"amount\": { \"quantity\": 100.00, \"currency\": \"ZAR\" }, \"nonce\": \"a1b2c3d4-0000-1111-2222-333344445555\", \"reason\": \"duplicate\" }\n  }\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Webhooks",
+      "item": [
+        {
+          "name": "Add Webhook Subscription",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}", "host": ["{{baseUrl}}"] },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"query\": \"mutation AddWebhook($url: URL!, $secret: String!) { clientWebhookAdd(input: { url: $url, secret: $secret }) { webhook { id url } } }\",\n  \"variables\": {\n    \"url\": \"https://example.com/webhooks/stitch\",\n    \"secret\": \"whsec_example\"\n  }\n}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

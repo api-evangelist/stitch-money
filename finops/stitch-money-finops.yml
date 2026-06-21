@@ -1,0 +1,110 @@
+specification: FinOps Framework
+specificationVersion: '1.0'
+schema: https://www.finops.org/framework/
+provider: Stitch
+providerId: stitch-money
+created: '2026-06-21'
+modified: '2026-06-21'
+reconciled: false
+tags:
+- Payments
+- Open Banking
+- Pay By Bank
+- GraphQL
+- Africa
+- South Africa
+- Fintech
+- FinOps
+- Cost Management
+- FOCUS
+description: >-
+  FinOps view of Stitch spend. Stitch bills on a per-transaction, sales-led
+  basis across its payment and data products - Pay By Bank and LinkPay payment
+  initiation, card, bank account verification, financial data access,
+  disbursements, and refunds. Fees are typically a percentage and/or flat
+  per-transaction amount negotiated by volume, settled against processed
+  payments. Public list rates are not published, so per-product effective
+  rates must be reconciled from invoices and the negotiated agreement.
+notes: >-
+  Per-transaction rates are sales-led and not publicly reconciled. Pull
+  effective rates from the Stitch agreement and settlement statements during
+  reconciliation.
+sources:
+- https://stitch.money/
+- https://docs.stitch.money
+- https://focus.finops.org/focus-specification/v1-3/
+alignedWith:
+  framework: FinOps Foundation Framework
+  frameworkUrl: https://www.finops.org/framework/
+  dataSpec: FOCUS
+  dataSpecVersion: '1.3'
+  dataSpecUrl: https://focus.finops.org/focus-specification/v1-3/
+publisherName: Stitch
+serviceCategory: Financial Services
+billingModel:
+  pricingCategory: Usage-Based
+  billingFrequency: Monthly
+  billingCurrency: ZAR
+  chargeCategories:
+  - Usage
+  - Purchase
+  - Adjustment
+focusColumns:
+  ServiceName: Stitch Payments
+  ServiceCategory: Financial Services
+  ProviderName: Stitch
+  PublisherName: Stitch
+  InvoiceIssuerName: Stitch
+  BillingCurrency: ZAR
+  ChargeCategory: Usage
+  PricingCategory: Usage-Based
+meters:
+- name: pay_by_bank_transactions
+  description: Pay By Bank / LinkPay payment initiation requests processed, billed per transaction.
+  unit: transactions
+  aggregation: sum
+  dimensions:
+  - client
+  - product
+- name: card_transactions
+  description: Card payment transactions processed, billed per transaction.
+  unit: transactions
+  aggregation: sum
+  dimensions:
+  - client
+- name: account_verifications
+  description: Bank account verification calls, billed per verification.
+  unit: verifications
+  aggregation: sum
+  dimensions:
+  - client
+- name: financial_data_requests
+  description: User financial data access (linked accounts / data pulls), billed per linked account or request.
+  unit: requests
+  aggregation: sum
+  dimensions:
+  - client
+- name: disbursements
+  description: Outbound disbursements / payouts, billed per payout.
+  unit: transactions
+  aggregation: sum
+  dimensions:
+  - client
+- name: refunds
+  description: Refunds issued against prior payments, billed per refund.
+  unit: transactions
+  aggregation: sum
+  dimensions:
+  - client
+principles:
+- name: Visibility
+  description: Reconcile Stitch settlement statements and invoices; track effective per-product transaction fees.
+- name: Allocation
+  description: Tag clients / products and map processed-payment fees to internal cost centers and merchants.
+- name: Optimization
+  description: Route to the lowest-cost rail per use case (Pay By Bank vs card), reuse LinkPay tokens for returning payers, and negotiate volume-tiered rates.
+- name: Accountability
+  description: Assign owners per client / product line; review processing fees monthly against payment volume.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

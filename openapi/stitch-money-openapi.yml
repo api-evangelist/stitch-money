@@ -1,0 +1,152 @@
+openapi: 3.0.1
+info:
+  title: Stitch GraphQL API
+  description: >-
+    OpenAPI description of the single GraphQL endpoint exposed by the Stitch
+    (stitch.money) payments and open-banking platform. All operations - Pay By
+    Bank / LinkPay payment initiation, bank account verification, financial data,
+    disbursements, refunds, and webhooks - are sent as GraphQL queries and
+    mutations to POST /graphql. This document models the GraphQL transport; the
+    GraphQL operations themselves are described in graphql/stitch-money-graphql.md
+    and graphql/stitch-money-schema.graphql. Covers Stitch.money the fintech,
+    distinct from any unrelated "Stitch" ETL product.
+  termsOfService: https://stitch.money/legal/terms
+  contact:
+    name: Stitch Support
+    url: https://docs.stitch.money
+  version: '1.0'
+servers:
+  - url: https://api.stitch.money
+    description: Stitch GraphQL API (test and live clients share this URL)
+security:
+  - bearerAuth: []
+paths:
+  /graphql:
+    post:
+      operationId: postGraphql
+      tags:
+        - GraphQL
+      summary: Execute a Stitch GraphQL query or mutation
+      description: >-
+        Single GraphQL entry point. Send a query or mutation in the request body
+        with an OAuth2 Bearer access token. Use a client-credentials client token
+        for payment requests, disbursements, refunds, verification, and webhook
+        configuration; use an authorization-code user access token for
+        user-permissioned financial data and LinkPay account linking.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GraphQLRequest'
+            examples:
+              createPayByBankRequest:
+                summary: Create a Pay By Bank payment initiation request
+                value:
+                  query: >-
+                    mutation CreatePaymentRequest($amount: MoneyInput!,
+                    $payerReference: String!, $beneficiaryReference: String!) {
+                    clientPaymentInitiationRequestCreate(input: { amount: $amount,
+                    payerReference: $payerReference, beneficiaryReference:
+                    $beneficiaryReference, beneficiary: { bankAccount: { name:
+                    "Acme Pty Ltd", bankId: fnb, accountNumber: "62000000000" } } })
+                    { paymentInitiationRequest { id url } } }
+                  variables:
+                    amount:
+                      quantity: 100.00
+                      currency: ZAR
+                    payerReference: order-1234
+                    beneficiaryReference: ACME-1234
+              getPaymentStatus:
+                summary: Query a payment initiation request status by id
+                value:
+                  query: >-
+                    query GetPaymentRequestStatus($id: ID!) { node(id: $id) { ...
+                    on PaymentInitiationRequest { id state { __typename } } } }
+                  variables:
+                    id: payment-initiation-request/01H...
+              verifyBankAccount:
+                summary: Verify a bank account
+                value:
+                  query: >-
+                    query VerifyBankAccount($input: BankAccountVerificationInput!) {
+                    verifyBankAccountDetails(input: $input) {
+                    accountVerificationResult accountHolderVerified
+                    accountNumberVerified accountOpen } }
+                  variables:
+                    input:
+                      accountNumber: '62000000000'
+                      bankId: fnb
+                      accountHolder:
+                        name: Jane Doe
+      responses:
+        '200':
+          description: >-
+            GraphQL response. HTTP 200 is returned for successful execution and
+            for requests that resolve with field-level errors; inspect the
+            "errors" array in the body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GraphQLResponse'
+        '401':
+          description: Missing or invalid OAuth2 Bearer access token.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GraphQLResponse'
+        '429':
+          description: Too many requests - client is being rate limited.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >-
+        OAuth2 access token. Client tokens are obtained via the
+        client_credentials grant (scoped, e.g. client_paymentrequest); user
+        access tokens via the authorization-code grant with PKCE.
+  schemas:
+    GraphQLRequest:
+      type: object
+      required:
+        - query
+      properties:
+        query:
+          type: string
+          description: The GraphQL query or mutation document.
+        operationName:
+          type: string
+          description: Name of the operation to run when the document defines several.
+        variables:
+          type: object
+          additionalProperties: true
+          description: Map of GraphQL variable names to values.
+    GraphQLResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          nullable: true
+          additionalProperties: true
+          description: The result of the executed operation.
+        errors:
+          type: array
+          description: Field- or request-level GraphQL errors, when present.
+          items:
+            $ref: '#/components/schemas/GraphQLError'
+    GraphQLError:
+      type: object
+      properties:
+        message:
+          type: string
+        path:
+          type: array
+          items:
+            type: string
+        extensions:
+          type: object
+          additionalProperties: true

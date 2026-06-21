@@ -1,0 +1,163 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Stitch GraphQL API",
+    "version": "1.0",
+    "description": "GraphQL POST examples for the Stitch (stitch.money) payments and open-banking API. All operations are sent to POST https://api.stitch.money/graphql with an OAuth2 Bearer access token. Covers Stitch.money the fintech, distinct from any unrelated 'Stitch' ETL product."
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": { "name": "Payments (Pay By Bank)", "type": "folder" },
+      "items": [
+        {
+          "info": { "name": "Create Pay By Bank Payment Request", "type": "http" },
+          "http": {
+            "method": "POST",
+            "url": "https://api.stitch.money/graphql",
+            "headers": [ { "name": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "type": "json",
+              "data": "{\"query\":\"mutation CreatePaymentRequest($amount: MoneyInput!, $payerReference: String!, $beneficiaryReference: String!) { clientPaymentInitiationRequestCreate(input: { amount: $amount, payerReference: $payerReference, beneficiaryReference: $beneficiaryReference, beneficiary: { bankAccount: { name: \\\"Acme Pty Ltd\\\", bankId: fnb, accountNumber: \\\"62000000000\\\" } } }) { paymentInitiationRequest { id url } } }\",\"variables\":{\"amount\":{\"quantity\":100.00,\"currency\":\"ZAR\"},\"payerReference\":\"order-1234\",\"beneficiaryReference\":\"ACME-1234\"}}"
+            }
+          },
+          "docs": "Create a Pay By Bank (instant EFT) payment initiation request via clientPaymentInitiationRequestCreate."
+        },
+        {
+          "info": { "name": "Get Payment Request Status", "type": "http" },
+          "http": {
+            "method": "POST",
+            "url": "https://api.stitch.money/graphql",
+            "headers": [ { "name": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "type": "json",
+              "data": "{\"query\":\"query GetPaymentRequestStatus($id: ID!) { node(id: $id) { ... on PaymentInitiationRequest { id state { __typename } } } }\",\"variables\":{\"id\":\"payment-initiation-request/01H...\"}}"
+            }
+          },
+          "docs": "Query a payment initiation request status via the Relay node field."
+        },
+        {
+          "info": { "name": "Cancel Payment Request", "type": "http" },
+          "http": {
+            "method": "POST",
+            "url": "https://api.stitch.money/graphql",
+            "headers": [ { "name": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "type": "json",
+              "data": "{\"query\":\"mutation CancelPayment($id: ID!) { clientPaymentInitiationRequestCancel(input: { paymentRequestId: $id }) { paymentInitiationRequest { id } } }\",\"variables\":{\"id\":\"payment-initiation-request/01H...\"}}"
+            }
+          },
+          "docs": "Cancel a pending payment request via clientPaymentInitiationRequestCancel."
+        },
+        {
+          "info": { "name": "LinkPay - Create Account Authorization", "type": "http" },
+          "http": {
+            "method": "POST",
+            "url": "https://api.stitch.money/graphql",
+            "headers": [ { "name": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "type": "json",
+              "data": "{\"query\":\"mutation LinkAccount($input: PaymentAuthorizationRequestCreateInput!) { clientPaymentAuthorizationRequestCreate(input: $input) { paymentAuthorizationRequest { id url } } }\",\"variables\":{\"input\":{\"beneficiary\":{\"bankAccount\":{\"name\":\"Acme Pty Ltd\",\"bankId\":\"fnb\",\"accountNumber\":\"62000000000\"}}}}}"
+            }
+          },
+          "docs": "Create a LinkPay account authorization request via clientPaymentAuthorizationRequestCreate."
+        }
+      ]
+    },
+    {
+      "info": { "name": "Account Verification", "type": "folder" },
+      "items": [
+        {
+          "info": { "name": "Verify Bank Account Details", "type": "http" },
+          "http": {
+            "method": "POST",
+            "url": "https://api.stitch.money/graphql",
+            "headers": [ { "name": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "type": "json",
+              "data": "{\"query\":\"query VerifyBankAccount($input: BankAccountVerificationInput!) { verifyBankAccountDetails(input: $input) { accountVerificationResult accountHolderVerified accountNumberVerified accountOpen } }\",\"variables\":{\"input\":{\"accountNumber\":\"62000000000\",\"bankId\":\"fnb\",\"accountHolder\":{\"name\":\"Jane Doe\"}}}}"
+            }
+          },
+          "docs": "Verify a bank account via the verifyBankAccountDetails query."
+        }
+      ]
+    },
+    {
+      "info": { "name": "Financial Data", "type": "folder" },
+      "items": [
+        {
+          "info": { "name": "List User Bank Accounts and Transactions", "type": "http" },
+          "http": {
+            "method": "POST",
+            "url": "https://api.stitch.money/graphql",
+            "headers": [ { "name": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "type": "json",
+              "data": "{\"query\":\"query UserTransactions { user { bankAccounts { accountNumber currentBalance transactions(first: 50) { edges { node { id amount reference description date runningBalance } } } } } }\"}"
+            }
+          },
+          "docs": "Retrieve user-permissioned bank accounts and transactions (requires a user access token)."
+        }
+      ]
+    },
+    {
+      "info": { "name": "Payouts and Disbursements", "type": "folder" },
+      "items": [
+        {
+          "info": { "name": "Initiate Disbursement", "type": "http" },
+          "http": {
+            "method": "POST",
+            "url": "https://api.stitch.money/graphql",
+            "headers": [ { "name": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "type": "json",
+              "data": "{\"query\":\"mutation CreateDisbursement($input: DisbursementInitiateInput!) { clientDisbursementInitiate(input: $input) { disbursement { id status } } }\",\"variables\":{\"input\":{\"amount\":{\"quantity\":250.00,\"currency\":\"ZAR\"},\"nonce\":\"d290f1ee-6c54-4b01-90e6-d701748f0851\",\"beneficiaryReference\":\"PAYOUT-9876\",\"beneficiary\":{\"bankAccount\":{\"name\":\"Jane Doe\",\"bankId\":\"capitec\",\"accountNumber\":\"1700000000\"}}}}}"
+            }
+          },
+          "docs": "Initiate an outbound disbursement / payout via clientDisbursementInitiate (nonce enforces idempotency)."
+        }
+      ]
+    },
+    {
+      "info": { "name": "Refunds", "type": "folder" },
+      "items": [
+        {
+          "info": { "name": "Initiate Refund", "type": "http" },
+          "http": {
+            "method": "POST",
+            "url": "https://api.stitch.money/graphql",
+            "headers": [ { "name": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "type": "json",
+              "data": "{\"query\":\"mutation CreateRefund($input: RefundInitiateInput!) { clientRefundInitiate(input: $input) { refund { id status } } }\",\"variables\":{\"input\":{\"originalPaymentId\":\"payment-initiation-request/01H...\",\"amount\":{\"quantity\":100.00,\"currency\":\"ZAR\"},\"nonce\":\"a1b2c3d4-0000-1111-2222-333344445555\",\"reason\":\"duplicate\"}}}"
+            }
+          },
+          "docs": "Refund a prior Pay By Bank or Card payment via clientRefundInitiate."
+        }
+      ]
+    },
+    {
+      "info": { "name": "Webhooks", "type": "folder" },
+      "items": [
+        {
+          "info": { "name": "Add Webhook Subscription", "type": "http" },
+          "http": {
+            "method": "POST",
+            "url": "https://api.stitch.money/graphql",
+            "headers": [ { "name": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "type": "json",
+              "data": "{\"query\":\"mutation AddWebhook($url: URL!, $secret: String!) { clientWebhookAdd(input: { url: $url, secret: $secret }) { webhook { id url } } }\",\"variables\":{\"url\":\"https://example.com/webhooks/stitch\",\"secret\":\"whsec_example\"}}"
+            }
+          },
+          "docs": "Register a signed webhook subscription via clientWebhookAdd."
+        }
+      ]
+    }
+  ]
+}
