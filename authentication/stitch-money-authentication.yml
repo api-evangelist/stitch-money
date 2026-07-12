@@ -1,0 +1,16 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/stitch-money-openapi.yml
+summary:
+  types:
+  - http
+schemes:
+- name: bearerAuth
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  description: OAuth2 access token. Client tokens are obtained via the client_credentials grant
+    (scoped, e.g. client_paymentrequest); user access tokens via the authorization-code grant
+    with PKCE.
+  sources:
+  - openapi/stitch-money-openapi.yml
