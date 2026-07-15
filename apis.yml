@@ -165,6 +165,8 @@ apis:
     disbursement, refund, and account-linking event callbacks, configured via the
     clientWebhookAdd GraphQL mutation against an HTTPS endpoint with a shared secret.
 common:
+- type: AgenticAccess
+  url: agentic-access/stitch-money-agentic-access.yml
 - type: VulnerabilityDisclosure
   url: security/stitch-money-vulnerability-disclosure.yml
 - type: DomainSecurity
