@@ -1,0 +1,14 @@
+{
+  "provider": "stitch-money",
+  "sources": [
+    "stitch-money-graphql-api-openapi.yml"
+  ],
+  "outputs": [
+    "stitch-money-graphql-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
