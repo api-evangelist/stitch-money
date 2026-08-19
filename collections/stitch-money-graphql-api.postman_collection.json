@@ -1,0 +1,246 @@
+{
+  "item": [
+    {
+      "id": "8c31bfe7-c91e-4b08-b39e-a9260ce29c3e",
+      "name": "GraphQL",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "e430dc5f-c26b-4ef1-811a-0ec44b17bb40",
+          "name": "Execute a Stitch GraphQL query or mutation",
+          "request": {
+            "name": "Execute a Stitch GraphQL query or mutation",
+            "description": {
+              "content": "Single GraphQL entry point. Send a query or mutation in the request body with an OAuth2 Bearer access token. Use a client-credentials client token for payment requests, disbursements, refunds, verification, and webhook configuration; use an authorization-code user access token for user-permissioned financial data and LinkPay account linking.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "graphql"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"<string>\",\n  \"operationName\": \"<string>\",\n  \"variables\": {\n    \"key_0\": \"string\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "5f2ce074-7a9e-4ad4-bd01-0db08356c1d6",
+              "name": "GraphQL response. HTTP 200 is returned for successful execution and for requests that resolve with field-level errors; inspect the \"errors\" array in the body.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "graphql"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"query\": \"mutation CreatePaymentRequest($amount: MoneyInput!, $payerReference: String!, $beneficiaryReference: String!) { clientPaymentInitiationRequestCreate(input: { amount: $amount, payerReference: $payerReference, beneficiaryReference: $beneficiaryReference, beneficiary: { bankAccount: { name: \\\"Acme Pty Ltd\\\", bankId: fnb, accountNumber: \\\"62000000000\\\" } } }) { paymentInitiationRequest { id url } } }\",\n  \"variables\": {\n    \"amount\": {\n      \"quantity\": 100,\n      \"currency\": \"ZAR\"\n    },\n    \"payerReference\": \"order-1234\",\n    \"beneficiaryReference\": \"ACME-1234\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": {\n    \"key_0\": \"string\"\n  },\n  \"errors\": [\n    {\n      \"message\": \"string\",\n      \"path\": [\n        \"string\",\n        \"string\"\n      ],\n      \"extensions\": {\n        \"key_0\": 5943,\n        \"key_1\": 4334.432802482482\n      }\n    },\n    {\n      \"message\": \"string\",\n      \"path\": [\n        \"string\",\n        \"string\"\n      ],\n      \"extensions\": {\n        \"key_0\": 9290\n      }\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "295fa9f5-8c48-4bb0-905f-d6f66b5652ef",
+              "name": "Missing or invalid OAuth2 Bearer access token.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "graphql"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"query\": \"mutation CreatePaymentRequest($amount: MoneyInput!, $payerReference: String!, $beneficiaryReference: String!) { clientPaymentInitiationRequestCreate(input: { amount: $amount, payerReference: $payerReference, beneficiaryReference: $beneficiaryReference, beneficiary: { bankAccount: { name: \\\"Acme Pty Ltd\\\", bankId: fnb, accountNumber: \\\"62000000000\\\" } } }) { paymentInitiationRequest { id url } } }\",\n  \"variables\": {\n    \"amount\": {\n      \"quantity\": 100,\n      \"currency\": \"ZAR\"\n    },\n    \"payerReference\": \"order-1234\",\n    \"beneficiaryReference\": \"ACME-1234\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": {\n    \"key_0\": \"string\"\n  },\n  \"errors\": [\n    {\n      \"message\": \"string\",\n      \"path\": [\n        \"string\",\n        \"string\"\n      ],\n      \"extensions\": {\n        \"key_0\": \"string\",\n        \"key_1\": 2768.245049957452\n      }\n    },\n    {\n      \"message\": \"string\",\n      \"path\": [\n        \"string\",\n        \"string\"\n      ],\n      \"extensions\": {\n        \"key_0\": \"string\"\n      }\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "38402cff-00a4-4d9e-b02d-f8b97b776f89",
+              "name": "Too many requests - client is being rate limited.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "graphql"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"query\": \"mutation CreatePaymentRequest($amount: MoneyInput!, $payerReference: String!, $beneficiaryReference: String!) { clientPaymentInitiationRequestCreate(input: { amount: $amount, payerReference: $payerReference, beneficiaryReference: $beneficiaryReference, beneficiary: { bankAccount: { name: \\\"Acme Pty Ltd\\\", bankId: fnb, accountNumber: \\\"62000000000\\\" } } }) { paymentInitiationRequest { id url } } }\",\n  \"variables\": {\n    \"amount\": {\n      \"quantity\": 100,\n      \"currency\": \"ZAR\"\n    },\n    \"payerReference\": \"order-1234\",\n    \"beneficiaryReference\": \"ACME-1234\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.stitch.money",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "62f57b18-e62b-4cc2-8223-234bcaab4e16",
+    "name": "Stitch GraphQL API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "OpenAPI description of the single GraphQL endpoint exposed by the Stitch (stitch.money) payments and open-banking platform. All operations - Pay By Bank / LinkPay payment initiation, bank account verification, financial data, disbursements, refunds, and webhooks - are sent as GraphQL queries and mutations to POST /graphql. This document models the GraphQL transport; the GraphQL operations themselves are described in graphql/stitch-money-graphql.md and graphql/stitch-money-schema.graphql. Covers Stitch.money the fintech, distinct from any unrelated \"Stitch\" ETL product.\n\nContact Support:\n Name: Stitch Support",
+      "type": "text/plain"
+    }
+  }
+}
