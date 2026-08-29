@@ -7,6 +7,18 @@ description: Stitch is a South African payments and open-banking infrastructure 
   EFT) and LinkPay payment initiation, bank account verification, financial data access
   (accounts, transactions, balances), payouts and disbursements, refunds, and signed
   webhook subscriptions, authenticated via OAuth2 client-credentials Bearer tokens.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: true
+  label: Hosted service · you call their endpoint
+  confidence: high
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: enterprise
   onboarding: self-serve
