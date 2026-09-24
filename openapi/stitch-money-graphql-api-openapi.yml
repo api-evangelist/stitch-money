@@ -1,6 +1,6 @@
-openapi: 3.0.1
+openapi: 3.2.0
 info:
-  title: Stitch GraphQL API
+  title: Stitch Graph QL API
   description: OpenAPI description of the single GraphQL endpoint exposed by the Stitch (stitch.money) payments and open-banking platform. All operations - Pay By Bank / LinkPay payment initiation, bank account verification, financial data, disbursements, refunds, and webhooks - are sent as GraphQL queries and mutations to POST /graphql. This document models the GraphQL transport; the GraphQL operations themselves are described in graphql/stitch-money-graphql.md and graphql/stitch-money-schema.graphql. Covers Stitch.money the fintech, distinct from any unrelated "Stitch" ETL product.
   termsOfService: https://stitch.money/legal/terms
   contact:
@@ -74,19 +74,18 @@ paths:
           description: Too many requests - client is being rate limited.
 components:
   schemas:
-    GraphQLResponse:
+    GraphQLError:
       type: object
       properties:
-        data:
-          type: object
-          nullable: true
-          additionalProperties: true
-          description: The result of the executed operation.
-        errors:
+        message:
+          type: string
+        path:
           type: array
-          description: Field- or request-level GraphQL errors, when present.
           items:
-            $ref: '#/components/schemas/GraphQLError'
+            type: string
+        extensions:
+          type: object
+          additionalProperties: true
     GraphQLRequest:
       type: object
       required:
@@ -102,18 +101,20 @@ components:
           type: object
           additionalProperties: true
           description: Map of GraphQL variable names to values.
-    GraphQLError:
+    GraphQLResponse:
       type: object
       properties:
-        message:
-          type: string
-        path:
-          type: array
-          items:
-            type: string
-        extensions:
-          type: object
+        data:
+          type:
+          - object
+          - 'null'
           additionalProperties: true
+          description: The result of the executed operation.
+        errors:
+          type: array
+          description: Field- or request-level GraphQL errors, when present.
+          items:
+            $ref: '#/components/schemas/GraphQLError'
   securitySchemes:
     bearerAuth:
       type: http
